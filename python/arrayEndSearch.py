@@ -4,7 +4,7 @@
 # Ex. for a = [1,2,0,1], a[0] is "1" so we can advance by a[0+1] to "2"
 # Then from index 1, a[1] is "2" we can advance to a[1+1] = a[2] or a[1+2] to a[3]; which is the end, therefore seach should return True
 
-# Ex. for a = [1,0,2], there is no steps after a[1] so search should return False
+# Ex. for a = [1,0,2], there are no steps after a[1] so search should return False
 
 # set = [1,2,0,1]
 # set = [1,0,2]
