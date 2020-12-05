@@ -7,7 +7,7 @@
       "balance": "$1,288.24",
       "picture": "http://placehold.it/32x32",
       "age": 39,
-      "eyeColor": "green",
+      "eyeColor": "{",
       "name": {
         "first": "Booth",
         "last": "Howe"
