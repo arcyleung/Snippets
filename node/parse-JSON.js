@@ -14,26 +14,25 @@ const assert = require('assert');
  * 
  * Output: Object with both string and Object properties
  * { foo: 'blah', bar: { baz: 2, qux: 'oof' } }
+ * 
+ * Conclusion: It's def faster to check before calling JSON.parse but try/ catch is expensive and that is likely what is causing
+ * the noticeable difference.
  */
 
 // Set up test data
-const numEntries = 100;
-const stringifiedJsonObjects = jsonObjects.map(jso => JSON.stringify(jso))
+
+// Number of properties the test object has
+const numEntries = 1000;
+const stringifiedJsonObjects = jsonObjects.map(jso => JSON.stringify(jso));
 const data = {};
 
-const keys = generateRandomStringArray(4, null, numEntries);
-let vals = generateRandomStringArray(50, null, numEntries - stringifiedJsonObjects.length);
-console.log(vals);
+const keys = generateRandomStringArray(4, null, Math.max(numEntries, stringifiedJsonObjects.length));
+let vals = generateRandomStringArray(50, null, Math.max(numEntries, stringifiedJsonObjects.length) - stringifiedJsonObjects.length);
+vals = vals.concat(stringifiedJsonObjects);
 
-vals = shuffleArray(vals.concat(stringifiedJsonObjects));
-console.log(vals);
-
-
-for (let ix = 0; ix < numEntries; ix++) {
+for (let ix = 0; ix < stringifiedJsonObjects.length; ix++) {
     data[keys[ix]] = vals[ix];
 }
-
-// console.log(data);
 
 const tryCatchParse = (data) => {
     const ret = {};
@@ -82,7 +81,7 @@ const quoteCheckParseIndex = (data) => {
 const quoteCheckParseIndexOf = (data) => {
     const ret = {};
     for (const [k, v] of Object.entries(data)) {
-        if (v.indexOf('{') !== -1 && v.indexOf('[') !== -1) {
+        if (v.indexOf('{') === -1 && v.indexOf('[') === -1) {
             ret[k] = v;
             continue;
         }
@@ -128,18 +127,10 @@ for (let trials = 0; trials < 10000; trials++) {
         const t0 = performance.now();
         const res = funcs[idx](data);
         const t1 = performance.now();
-        // results.push(res)
         timestamps[idx].push(t1-t0);
     }
 }
 
-
-
 const averages = timestamps.map(times => average(times))
 
-console.table(averages);
-console.log(average([1,2,3,4,5,6]))
-
-// assert.deepStrictEqual(results[0], results[1]);
-// assert.deepStrictEqual(results[1], results[2]);
-// assert.deepStrictEqual(results[2], results[0]);
+console.table({ function: funcs.map(f => f.name), averages });
